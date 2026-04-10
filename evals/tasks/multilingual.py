@@ -125,4 +125,30 @@ def get_tasks() -> list[dict]:
                 }
             ],
         },
+        {
+            "name": "french_debugging",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": (
+                        "Analysez ce code Python et trouvez tous les bugs. Expliquez chaque problème "
+                        "en français et fournissez le code corrigé.\n\n"
+                        "```python\n"
+                        "class ConnectionPool:\n"
+                        "    def __init__(self, max_size=10):\n"
+                        "        self.pool = []\n"
+                        "        self.max_size = max_size\n"
+                        "        self.lock = threading.Lock()\n\n"
+                        "    def get_connection(self):\n"
+                        "        if len(self.pool) > 0:\n"
+                        "            return self.pool.pop()\n"
+                        "        return self._create_connection()\n\n"
+                        "    def release(self, conn):\n"
+                        "        if len(self.pool) < self.max_size:\n"
+                        "            self.pool.append(conn)\n"
+                        "```"
+                    ),
+                }
+            ],
+        },
     ]
