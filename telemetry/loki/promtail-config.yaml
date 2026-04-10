@@ -1,0 +1,46 @@
+# Promtail configuration for shipping llama-server logs to Loki
+# Deploy on zion-training (where llama-server runs)
+# Run with: promtail -config.file=promtail-config.yaml
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/lib/promtail/positions.yaml
+
+clients:
+  - url: http://100.93.42.16:3100/loki/api/v1/push  # artemisai-local (Loki host)
+
+scrape_configs:
+  - job_name: llama-server
+    journal:
+      labels:
+        job: llama-server
+        host: zion-training
+      path: /var/log/journal
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
+      - source_labels: ['__journal__systemd_unit']
+        regex: 'llama-server\.service'
+        action: keep
+    pipeline_stages:
+      # Extract metrics from llama-server log lines
+      - regex:
+          expression: 'slot .* tokens_predicted = (?P<tokens_predicted>\d+)'
+      - regex:
+          expression: 'slot .* t_gen_ms = (?P<gen_ms>[\d.]+)'
+      - regex:
+          expression: 'slot .* speed: (?P<tokens_per_sec>[\d.]+) t/s'
+      - labels:
+          tokens_predicted:
+          tokens_per_sec:
+      # Tag error lines
+      - match:
+          selector: '{unit="llama-server.service"}'
+          stages:
+            - regex:
+                expression: '(?i)(error|fail|crash|oom|assert|abort)'
+            - labels:
+                level: error

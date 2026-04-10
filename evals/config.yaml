@@ -1,0 +1,36 @@
+# Gemma4 Eval Configuration
+endpoints:
+  zion-training:
+    url: http://100.81.152.45:8080/v1/chat/completions
+    model: gemma4
+    description: "llama-server, Q6_K, RTX 3090+3060"
+
+defaults:
+  max_tokens: 4096
+  temperature: 0.7
+  thinking_budget_tokens: 2048
+  timeout: 120  # seconds
+
+tasks:
+  reasoning:
+    description: "Multi-step logical reasoning and proofs"
+    weight: 1.0
+  coding:
+    description: "Code generation with real-world constraints"
+    weight: 1.0
+  system_design:
+    description: "Architecture and system design at scale"
+    weight: 1.0
+  tool_use:
+    description: "Function calling and JSON parameter handling"
+    weight: 1.0
+
+metrics:
+  prometheus_pushgateway: http://100.93.42.16:9091  # if using pushgateway
+  collect:
+    - response_time_seconds
+    - tokens_per_second
+    - thinking_tokens
+    - content_tokens
+    - content_field_populated  # boolean - THE critical metric
+    - tool_call_parse_success  # boolean for tool_use tasks

@@ -1,0 +1,157 @@
+{
+  "dashboard": {
+    "title": "llama-server Gemma4 Telemetry",
+    "uid": "llama-server-gemma4",
+    "tags": ["llama-server", "gemma4", "inference"],
+    "timezone": "browser",
+    "refresh": "10s",
+    "panels": [
+      {
+        "title": "Generation Speed (tokens/sec)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "llamacpp:predicted_tokens_seconds",
+            "legendFormat": "{{ instance }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "tokens/s",
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 10},
+                {"color": "green", "value": 15}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Prompt Throughput (tokens/sec)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "llamacpp:prompt_tokens_seconds",
+            "legendFormat": "{{ instance }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "tokens/s"}
+        }
+      },
+      {
+        "title": "Total Tokens Generated",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "llamacpp:tokens_predicted_total",
+            "legendFormat": "{{ instance }}"
+          }
+        ]
+      },
+      {
+        "title": "Total Prompt Tokens",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 8},
+        "targets": [
+          {
+            "expr": "llamacpp:prompt_tokens_total",
+            "legendFormat": "{{ instance }}"
+          }
+        ]
+      },
+      {
+        "title": "Active Requests",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "llamacpp:requests_processing",
+            "legendFormat": "{{ instance }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "max": 5,
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 1},
+                {"color": "red", "value": 3}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Deferred Requests (Queue)",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 8},
+        "targets": [
+          {
+            "expr": "llamacpp:requests_deferred",
+            "legendFormat": "{{ instance }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "max": 32,
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 5},
+                {"color": "red", "value": 15}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "title": "Generation Rate (tokens/min)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "rate(llamacpp:tokens_predicted_total[5m]) * 60",
+            "legendFormat": "{{ instance }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {"unit": "tokens/min"}
+        }
+      },
+      {
+        "title": "Decode Calls Rate (/min)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+        "targets": [
+          {
+            "expr": "rate(llamacpp:n_decode_total[5m]) * 60",
+            "legendFormat": "{{ instance }}"
+          }
+        ]
+      },
+      {
+        "title": "llama-server Logs (Loki)",
+        "type": "logs",
+        "gridPos": {"h": 10, "w": 24, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "{job=\"llama-server\"}",
+            "datasource": "Loki"
+          }
+        ],
+        "options": {
+          "showTime": true,
+          "wrapLogMessage": true,
+          "enableLogDetails": true
+        }
+      }
+    ]
+  }
+}

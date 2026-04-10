@@ -1,0 +1,13 @@
+# Prometheus scrape config for llama-server instances
+# Add this to /etc/prometheus/prometheus.yml under scrape_configs:
+
+- job_name: 'llama-server'
+  scrape_interval: 15s
+  metrics_path: /metrics
+  static_configs:
+    - targets: ['100.81.152.45:8080']
+      labels:
+        instance: 'zion-training'
+        model: 'gemma4-31b-Q6_K'
+        runtime: 'llama-server'
+        gpu: 'RTX3090+RTX3060'

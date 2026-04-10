@@ -1,0 +1,36 @@
+# Prometheus alerting rules for llama-server
+groups:
+  - name: llama-server
+    rules:
+      - alert: LlamaServerDown
+        expr: up{job="llama-server"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "llama-server {{ $labels.instance }} is down"
+
+      - alert: LlamaServerSlowGeneration
+        expr: llamacpp:predicted_tokens_seconds < 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "llama-server {{ $labels.instance }} generation speed below 5 t/s"
+          description: "Current: {{ $value }} t/s. Check GPU memory pressure or thermal throttling."
+
+      - alert: LlamaServerHighQueueDepth
+        expr: llamacpp:requests_deferred > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "llama-server {{ $labels.instance }} has {{ $value }} deferred requests"
+
+      - alert: LlamaServerNoActivity
+        expr: rate(llamacpp:tokens_predicted_total[30m]) == 0 and llamacpp:tokens_predicted_total > 0
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "llama-server {{ $labels.instance }} idle for 30 minutes"
