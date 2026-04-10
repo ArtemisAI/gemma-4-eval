@@ -16,7 +16,7 @@ from openai import OpenAI
 from rich.console import Console
 from rich.table import Table
 
-from evals.tasks import reasoning, coding, system_design, tool_use
+from evals.tasks import reasoning, coding, system_design, tool_use, multilingual
 
 console = Console()
 
@@ -25,6 +25,7 @@ TASK_MODULES = {
     "coding": coding,
     "system_design": system_design,
     "tool_use": tool_use,
+    "multilingual": multilingual,
 }
 
 
@@ -50,7 +51,7 @@ def run_single_eval(client: OpenAI, model: str, task: dict, config: dict) -> dic
             max_tokens=defaults.get("max_tokens", 4096),
             temperature=defaults.get("temperature", 0.7),
             extra_body=extra_body if extra_body else None,
-            timeout=defaults.get("timeout", 120),
+            timeout=defaults.get("timeout", 600),
         )
         elapsed = time.monotonic() - start
 
@@ -98,7 +99,9 @@ def run_single_eval(client: OpenAI, model: str, task: dict, config: dict) -> dic
 def run_evals(endpoint: str, model: str, task_filter: str = None, config: dict = None):
     """Run all eval tasks and return results."""
     config = config or load_config()
-    client = OpenAI(base_url=endpoint.rstrip("/").rsplit("/v1", 1)[0] + "/v1", api_key="not-needed")
+    base = endpoint.rstrip("/").rsplit("/v1", 1)[0] + "/v1"
+    timeout_s = config.get("defaults", {}).get("timeout", 600)
+    client = OpenAI(base_url=base, api_key="not-needed", timeout=timeout_s)
 
     results = []
     tasks_to_run = {}
