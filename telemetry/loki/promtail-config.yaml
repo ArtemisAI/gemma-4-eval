@@ -10,7 +10,7 @@ positions:
   filename: /var/lib/promtail/positions.yaml
 
 clients:
-  - url: http://100.93.42.16:3100/loki/api/v1/push  # artemisai-local (Loki host)
+  - url: http://100.86.157.4:3100/loki/api/v1/push  # artemisai-local (Loki host)
 
 scrape_configs:
   - job_name: llama-server

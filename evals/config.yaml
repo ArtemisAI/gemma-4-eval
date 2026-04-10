@@ -1,7 +1,7 @@
 # Gemma4 Eval Configuration
 endpoints:
   zion-training:
-    url: http://100.81.152.45:8080/v1/chat/completions
+    url: http://100.70.28.111:8080/v1/chat/completions
     model: gemma4
     description: "llama-server, Q6_K, RTX 3090+3060"
 
@@ -26,7 +26,7 @@ tasks:
     weight: 1.0
 
 metrics:
-  prometheus_pushgateway: http://100.93.42.16:9091  # if using pushgateway
+  prometheus_pushgateway: http://100.86.157.4:9091  # if using pushgateway
   collect:
     - response_time_seconds
     - tokens_per_second
