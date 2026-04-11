@@ -10,11 +10,12 @@
 |---|---|---|---|---|---|---|---|
 | llama-server | zion-training | llama.cpp b1-0893f50, CUDA 12.6 | gemma4-31b Q6_K | **131072** | 15.7-18.5 t/s | `http://100.70.28.111:8080/v1` | **Production** |
 | llama-server | io-training | llama.cpp b1-0893f50, CUDA 12.6 | gemma4-31b Q4_K_M | **65536** | ~15 t/s | `http://100.68.161.101:8080/v1` | **Production** |
+| llama-server | artemisai-local | llama.cpp b1-0893f50 (io binary), CUDA 13.0 | gemma4-31b Q4_K_M | **65536** | ~16.4 t/s | `http://100.86.157.4:8080/v1` | **Production** |
 | Ollama | vast.ai | Ollama (Docker) | gemma4:31b Q4_K_M | 32768 | 43.3 t/s | `http://108.255.76.60:55482` (SSH tunnel) | Active |
 
 ### GPU Pooling & Parallelism
 
-Both llama-server nodes use `--split-mode layer` to pool multiple GPUs:
+All llama-server nodes use `--split-mode layer` to pool multiple GPUs:
 
 - **zion-training**: RTX 3090 (24GB) + RTX 3060 (12GB) = **36GB pooled VRAM**
   - Layer splitting: ~65% of layers on GPU0, ~35% on GPU1
@@ -22,6 +23,10 @@ Both llama-server nodes use `--split-mode layer` to pool multiple GPUs:
 - **io-training**: 2× RTX 3060 (12GB each) = **24GB pooled VRAM**
   - Layer splitting: ~50/50 across both GPUs
   - VRAM: GPU0 10.5GB / GPU1 10.7GB = 21.3GB used, 2.6GB headroom
+- **artemisai-local**: 2× RTX 3060 (12GB each) = **24GB pooled VRAM**
+  - Layer splitting: ~50/50 across both GPUs
+  - VRAM: GPU0 11.2GB / GPU1 11.5GB = 22.6GB used, 1.2GB headroom
+  - Ollama removed, replaced with llama-server (2026-04-11)
 
 **Note on tensor parallelism modes:**
 - `--split-mode layer` (current): Distributes transformer layers across GPUs. Each GPU processes its assigned layers sequentially. No inter-GPU communication during forward pass. Works with any GPU combination.
@@ -97,7 +102,6 @@ llama-server supports `thinking_budget_tokens` per request to cap reasoning:
 - **vast.ai** Ollama endpoint
 
 ### Machines to demote to embedding-only (issue #66)
-- artemisai-local (root disk 99% full)
 - niobe (GPU occupied by production services)
 - zero-one-inference (AMD /dev/kfd missing)
 
