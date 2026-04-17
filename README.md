@@ -50,6 +50,21 @@ We track all open Gemma4 issues in llama.cpp. See our [issue tracker](https://gi
 - **Tool call infinite loops** (ggml-org/llama.cpp#21375) -- PEG parser issue, active discussion
 - **Cache reuse broken** (ggml-org/llama.cpp#21468) -- partial fix via PR #21513
 - **--parallel broken** (ggml-org/llama.cpp#21329) -- use `--parallel 1` as workaround
+- **Array params with braces** (ggml-org/llama.cpp#21384) -- serialization defect
+- **Unexpected tokens after tool calls** (ggml-org/llama.cpp#21316) -- active
+- **MoE 26b halting** -- model halts at ~49 tokens with system prompts >500 chars
+
+### Infrastructure Issues
+
+| # | Issue | Machine | Priority |
+|---|---|---|---|
+| #54 | GPU passthrough crash -- needs physical power cycle | mc-inference | P1 |
+| #57 | AMD /dev/kfd missing -- no ROCm KFD | zero-one | P1 |
+| #65 | GCC 15 / CUDA 12.8 incompatible -- blocks tensor parallel | Fedora hosts | P1 |
+| #66 | NewAPI routing -- demote non-inference to embedding channels | NewAPI | P2 |
+| #60 | GPU occupied by production services since Mar 12 | niobe | P2 |
+
+For full architectural analysis, see [docs/architectural-impedances.md](docs/architectural-impedances.md).
 
 ## Deployment Reference
 
